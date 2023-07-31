@@ -17,6 +17,7 @@ var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 var facing_direction : float
 var sight_distance : float = 250.0
 var movement_speed: float = 25.0
+var attack_dash_speed: float = 100.0
 
 func _ready():
 	# Set the animations as active
@@ -59,7 +60,7 @@ func update_animation_parameters():
 func update_facing_direction():
 	if velocity.x < 0:
 		sprite.flip_h = false
-		facing_direction = 1
+		facing_direction = -1
 	if velocity.x > 0:
 		sprite.flip_h = true
-		facing_direction = -1
+		facing_direction = 1
