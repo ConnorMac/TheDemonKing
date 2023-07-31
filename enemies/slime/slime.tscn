@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://dn7etdxcjkybm"]
+[gd_scene load_steps=27 format=3 uid="uid://dn7etdxcjkybm"]
 
 [ext_resource type="Script" path="res://enemies/slime/slime.gd" id="1_aj5d7"]
 [ext_resource type="Texture2D" uid="uid://dfjipsvvtmjjn" path="res://art/enemies/base_enemies/Anim/Slime 1D[anim].png" id="1_w8grm"]
@@ -85,9 +85,45 @@ tracks/1/keys = {
 "values": [35, 34, 33, 32]
 }
 
+[sub_resource type="Animation" id="Animation_sf2cj"]
+resource_name = "attack_windup"
+length = 0.2
+step = 0.05
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.05, 0.1, 0.15),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [47, 46, 45, 44]
+}
+
+[sub_resource type="Animation" id="Animation_d501o"]
+resource_name = "attack_dash"
+length = 0.4
+step = 0.0667
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.0667, 0.1334, 0.2001, 0.2668, 0.3335),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [45, 46, 47, 38, 38, 38]
+}
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_28mox"]
 _data = {
 "RESET": SubResource("Animation_ptb10"),
+"attack_dash": SubResource("Animation_d501o"),
+"attack_windup": SubResource("Animation_sf2cj"),
 "idle": SubResource("Animation_omrdh"),
 "walk": SubResource("Animation_h1o87")
 }
@@ -110,14 +146,33 @@ blend_point_2/node = SubResource("AnimationNodeAnimation_ndkdg")
 blend_point_2/pos = 1.0
 blend_mode = 1
 
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_5cqsb"]
+animation = &"attack_dash"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_s40ln"]
+animation = &"attack_windup"
+
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_51sxf"]
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_4uws7"]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_um2q5"]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_ivp0b"]
+switch_mode = 2
 advance_mode = 2
 
 [sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_f53se"]
 states/Move/node = SubResource("AnimationNodeBlendSpace1D_0ncmo")
 states/Move/position = Vector2(576, 113)
 states/Start/position = Vector2(266, 113)
-transitions = ["Start", "Move", SubResource("AnimationNodeStateMachineTransition_51sxf")]
+states/attack_dash/node = SubResource("AnimationNodeAnimation_5cqsb")
+states/attack_dash/position = Vector2(752, 20.065)
+states/attack_windup/node = SubResource("AnimationNodeAnimation_s40ln")
+states/attack_windup/position = Vector2(585, 19.9244)
+transitions = ["Start", "Move", SubResource("AnimationNodeStateMachineTransition_51sxf"), "Move", "attack_windup", SubResource("AnimationNodeStateMachineTransition_4uws7"), "attack_windup", "attack_dash", SubResource("AnimationNodeStateMachineTransition_um2q5"), "attack_dash", "Move", SubResource("AnimationNodeStateMachineTransition_ivp0b")]
+graph_offset = Vector2(193.5, -41.685)
 
 [sub_resource type="LabelSettings" id="LabelSettings_kkjfq"]
 font_size = 6
@@ -147,20 +202,25 @@ tree_root = SubResource("AnimationNodeStateMachine_f53se")
 anim_player = NodePath("../AnimationPlayer")
 parameters/Move/blend_position = -1.01429
 
+[node name="AttackTimer" type="Timer" parent="."]
+process_callback = 0
+one_shot = true
+
 [node name="CharacterStateMachine" type="Node" parent="." node_paths=PackedStringArray("current_state", "character", "animation_tree")]
 script = ExtResource("3_ffnct")
 current_state = NodePath("GroundIdle")
 character = NodePath("..")
 animation_tree = NodePath("../AnimationTree")
 
-[node name="GroundIdle" type="Node" parent="CharacterStateMachine" node_paths=PackedStringArray("GroundMoving")]
+[node name="GroundIdle" type="Node" parent="CharacterStateMachine" node_paths=PackedStringArray("ground_moving_state", "attacking_state")]
 script = ExtResource("4_n2fp3")
-GroundMoving = NodePath("../GroundMoving")
+ground_moving_state = NodePath("../GroundMoving")
+attacking_state = NodePath("../Attacking")
 
-[node name="GroundMoving" type="Node" parent="CharacterStateMachine" node_paths=PackedStringArray("GroundIdle", "Attacking")]
+[node name="GroundMoving" type="Node" parent="CharacterStateMachine" node_paths=PackedStringArray("ground_idle_state", "attacking_state")]
 script = ExtResource("5_c2spm")
-GroundIdle = NodePath("../GroundIdle")
-Attacking = NodePath("../Attacking")
+ground_idle_state = NodePath("../GroundIdle")
+attacking_state = NodePath("../Attacking")
 
 [node name="Attacking" type="Node" parent="CharacterStateMachine" node_paths=PackedStringArray("GroundIdle")]
 script = ExtResource("6_4o4tc")
@@ -175,3 +235,7 @@ text = "State:"
 label_settings = SubResource("LabelSettings_kkjfq")
 script = ExtResource("7_pc246")
 state_machine = NodePath("../CharacterStateMachine")
+
+[connection signal="animation_finished" from="AnimationTree" to="CharacterStateMachine/Attacking" method="_on_animation_tree_animation_finished"]
+[connection signal="animation_player_changed" from="AnimationTree" to="CharacterStateMachine/Attacking" method="_on_animation_tree_animation_player_changed"]
+[connection signal="animation_started" from="AnimationTree" to="CharacterStateMachine/Attacking" method="_on_animation_tree_animation_started"]

@@ -441,7 +441,7 @@ states/land/position = Vector2(487, -25)
 states/rolling/node = SubResource("AnimationNodeAnimation_fno7g")
 states/rolling/position = Vector2(447, 195)
 transitions = ["Start", "Move", SubResource("AnimationNodeStateMachineTransition_lsaj3"), "Move", "jump_start", SubResource("AnimationNodeStateMachineTransition_ipv3w"), "land", "Move", SubResource("AnimationNodeStateMachineTransition_in1st"), "jump_start", "land", SubResource("AnimationNodeStateMachineTransition_mqa4g"), "Move", "rolling", SubResource("AnimationNodeStateMachineTransition_cai1c"), "rolling", "Move", SubResource("AnimationNodeStateMachineTransition_pprhx"), "Move", "ground_attack", SubResource("AnimationNodeStateMachineTransition_fxoew"), "rolling", "ground_attack", SubResource("AnimationNodeStateMachineTransition_v37m0"), "ground_attack", "Move", SubResource("AnimationNodeStateMachineTransition_rxh3w"), "jump_start", "in_air", SubResource("AnimationNodeStateMachineTransition_86vlh"), "Move", "in_air", SubResource("AnimationNodeStateMachineTransition_rxhcu"), "in_air", "land", SubResource("AnimationNodeStateMachineTransition_bw2bn"), "in_air", "air_attack", SubResource("AnimationNodeStateMachineTransition_6dce8"), "jump_start", "air_attack", SubResource("AnimationNodeStateMachineTransition_hxrfl"), "air_attack", "in_air", SubResource("AnimationNodeStateMachineTransition_j1nke")]
-graph_offset = Vector2(-328, -168)
+graph_offset = Vector2(213.8, -138.225)
 
 [sub_resource type="LabelSettings" id="LabelSettings_51ok2"]
 font_size = 6

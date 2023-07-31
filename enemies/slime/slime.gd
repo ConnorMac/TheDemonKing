@@ -17,7 +17,8 @@ var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 var facing_direction : float
 var sight_distance : float = 250.0
 var movement_speed: float = 25.0
-var attack_dash_speed: float = 100.0
+var attack_dash_speed: float = 200.0
+var attack_dash_jump_speed: float = -200.0
 
 func _ready():
 	# Set the animations as active
