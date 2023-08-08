@@ -6,6 +6,9 @@ extends State
 @export var attack_windup_anim : String = "attack_windup"
 @export var attack_dash_anim : String = "attack_dash"
 
+# Attack hitbox
+@onready var hitbox : Area2D
+
 # Attack timer
 @onready var attack_timer = get_node("../../AttackTimer")
 
@@ -31,7 +34,6 @@ func ground_attack():
 	attack_timer.start()
 
 func _on_animation_tree_animation_finished(anim_name):
-	print(anim_name)
 	if anim_name == attack_windup_anim:
 		print("Doing ground attack")
 		ground_attack()

@@ -1,8 +1,7 @@
 extends CharacterBody2D
 
+class_name Player
 
-#const SPEED = 200.0
-#const JUMP_VELOCITY = -350.0
 
 # Player specific vars
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
@@ -16,6 +15,19 @@ var facing_direction : float
 @export var number_of_air_jumps = 1
 @export var number_of_air_attacks = 1
 @export var movement_speed = 200.0
+
+# Health update handler
+@export var max_health : float = 100
+@export var current_health : float = 100:
+	get:
+		return current_health
+	set(value):
+		SignalBus.emit_signal("on_health_changed", get_parent(), value - current_health)
+		current_health = value
+# Need to figure out python like props
+var is_alive : bool = true:
+	get:
+		return true if current_health > max_health else false
 
 # Damage values
 var ground_attack = 10
@@ -32,6 +44,9 @@ var times_jumped_in_air = 0
 
 # States
 @export var dodge_state : State
+
+# Signals
+signal facing_direction_change(facing_right : bool)
 
 func _ready():
 	# Set the animations as active
@@ -68,3 +83,5 @@ func update_facing_direction():
 		if direction.x < 0:
 			sprite.flip_h = true
 			facing_direction = -1
+
+		emit_signal("facing_direction_change", !sprite.flip_h)

@@ -7,10 +7,12 @@ extends State
 # Anim names
 @export var dodging_animation : String = "rolling"
 
-# func on_enter(previous_state : State):
-	# Give the players accel a slight boost on dodge
-	# character.velocity.x += (character.dodge_accel_boost * character.direction.x)
-	# print(character.velocity.x)
+# Timers
+@onready var dodge_timer = get_node("../../DodgeTimer")
+
+func on_enter(previous_state : State):
+	# Start the timer that restrict the next dodge
+	dodge_timer.start()
 	
 func state_process(delta):
 	# Give the dodge some oomf

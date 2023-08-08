@@ -1,9 +1,11 @@
-[gd_scene load_steps=10 format=3 uid="uid://bitr87rdie1lf"]
+[gd_scene load_steps=12 format=3 uid="uid://bitr87rdie1lf"]
 
 [ext_resource type="Texture2D" uid="uid://86axyl2g8o2s" path="res://art/map/caverns/layers/tiles.png" id="1_bu7bx"]
 [ext_resource type="PackedScene" uid="uid://7q4lg3buwj6l" path="res://player/player.tscn" id="2_2isc8"]
 [ext_resource type="Texture2D" uid="uid://7hfmdsltevoe" path="res://art/lighting/2d_lights_and_shadows_neutral_point_light.webp" id="3_8udfx"]
 [ext_resource type="PackedScene" uid="uid://dn7etdxcjkybm" path="res://enemies/slime/slime.tscn" id="4_xu3tx"]
+[ext_resource type="Script" path="res://levels/HealthControl.gd" id="5_wm180"]
+[ext_resource type="PackedScene" uid="uid://1esh0elaxcgn" path="res://UI/combat/health_changed_label.tscn" id="6_y3foj"]
 
 [sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_xjqhf"]
 polygon = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
@@ -1250,3 +1252,11 @@ position = Vector2(410, 156)
 
 [node name="Slime3" parent="." groups=["enemies"] instance=ExtResource("4_xu3tx")]
 position = Vector2(277, 187)
+
+[node name="HealthControl" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("5_wm180")
+health_changed_label = ExtResource("6_y3foj")

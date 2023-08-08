@@ -7,6 +7,7 @@ const JUMP_VELOCITY = -400.0
 # Core nodes
 @onready var sprite : Sprite2D = $Sprite2D # Player Sprite sheet
 @onready var animation_tree : AnimationTree = $AnimationTree # Animation control
+@onready var state_machine : CharacterStateMachine = $CharacterStateMachine
 # A bit of a hack to get the player in the "player" group
 @onready var player : CharacterBody2D = get_tree().get_nodes_in_group("player")[0]
 
@@ -19,6 +20,19 @@ var sight_distance : float = 250.0
 var movement_speed: float = 25.0
 var attack_dash_speed: float = 200.0
 var attack_dash_jump_speed: float = -200.0
+
+# Health update handler
+@export var max_health : float = 20
+@export var current_health : float = 20:
+	get:
+		return current_health
+	set(value):
+		SignalBus.emit_signal("on_health_changed", get_parent(), value - current_health)
+		current_health = value
+# Need to figure out python like props
+var is_alive : bool = true:
+	get:
+		return true if current_health > max_health else false
 
 func _ready():
 	# Set the animations as active
@@ -65,3 +79,7 @@ func update_facing_direction():
 	if velocity.x > 0:
 		sprite.flip_h = true
 		facing_direction = 1
+
+
+func _on_damage_box_body_entered(body):
+	pass # Replace with function body.

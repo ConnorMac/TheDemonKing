@@ -11,6 +11,9 @@ extends State
 @export var landing_animation : String = "land"
 @export var dodge_animation : String = "rolling"
 
+# Timers
+@onready var dodge_timer = get_node("../../DodgeTimer")
+
 
 func on_enter(previous_state : State):
 	# Reset air vars
@@ -27,7 +30,7 @@ func state_process(delta):
 func state_input(event : InputEvent):
 	if(event.is_action_pressed("jump")):
 		jump()
-	if(event.is_action_pressed("dodge")):
+	if(event.is_action_pressed("dodge") and dodge_timer.is_stopped()) :
 		dodge()
 	if(event.is_action_pressed("attack")):
 		attack()

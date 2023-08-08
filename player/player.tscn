@@ -1,4 +1,4 @@
-[gd_scene load_steps=49 format=3 uid="uid://7q4lg3buwj6l"]
+[gd_scene load_steps=68 format=3 uid="uid://7q4lg3buwj6l"]
 
 [ext_resource type="Script" path="res://player/player.gd" id="1_s7ewl"]
 [ext_resource type="Texture2D" uid="uid://dsulu5xil8xfe" path="res://art/bladekeeper/spritesheets/metal_bladekeeper_FREE_v1.1_SpriteSheet_288x128.png" id="2_4gm2r"]
@@ -8,6 +8,14 @@
 [ext_resource type="Script" path="res://player/Rolling.gd" id="6_2b77o"]
 [ext_resource type="Script" path="res://player/State_debug.gd" id="6_tmknx"]
 [ext_resource type="Script" path="res://player/Attack.gd" id="7_r6cqv"]
+[ext_resource type="Script" path="res://player/Hit.gd" id="8_875ap"]
+[ext_resource type="Script" path="res://player/DamageHandler.gd" id="9_5tymk"]
+[ext_resource type="Script" path="res://player/Dead.gd" id="9_deu0a"]
+[ext_resource type="Script" path="res://player/HealthLabel.gd" id="10_saoy4"]
+[ext_resource type="Script" path="res://player/FacingCollisionShape2D.gd" id="13_q53mh"]
+[ext_resource type="Script" path="res://player/GroundAttackHitbox.gd" id="13_qdsuv"]
+[ext_resource type="Script" path="res://player/CollisionShape2D.gd" id="15_8bgq1"]
+[ext_resource type="Script" path="res://player/AirAttackHitbox.gd" id="15_vte1f"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_68q5i"]
 radius = 11.0
@@ -43,6 +51,35 @@ tracks/0/keys = {
 "transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
 "update": 1,
 "values": [100, 101, 102, 103, 104, 105, 106, 107]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("AirAttackHitbox:monitoring")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.12, 0.36),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [true, false]
+}
+
+[sub_resource type="Animation" id="Animation_ui32x"]
+resource_name = "dead"
+length = 1.5
+step = 0.125
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1, 1.125, 1.25, 1.375),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [300, 301, 302, 303, 304, 305, 306, 307, 308, 309, 310, 311]
 }
 
 [sub_resource type="Animation" id="Animation_mxmxo"]
@@ -99,6 +136,35 @@ tracks/1/keys = {
 "transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
 "update": 1,
 "values": [180, 181, 182, 183, 184, 185]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("GroundAttackHitbox:monitoring")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.05, 0.2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [true, false]
+}
+
+[sub_resource type="Animation" id="Animation_a2vy2"]
+resource_name = "hit"
+length = 0.3
+step = 0.05
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.05, 0.1, 0.15, 0.2, 0.25),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [280, 281, 282, 283, 284, 285]
 }
 
 [sub_resource type="Animation" id="Animation_7umd7"]
@@ -340,8 +406,10 @@ resource_name = "walk"
 _data = {
 "RESET": SubResource("Animation_wvwh2"),
 "air_attack": SubResource("Animation_j7r3n"),
+"dead": SubResource("Animation_ui32x"),
 "double_jump": SubResource("Animation_mxmxo"),
 "ground_attack": SubResource("Animation_hkox8"),
+"hit": SubResource("Animation_a2vy2"),
 "idle": SubResource("Animation_7umd7"),
 "in_air": SubResource("Animation_dmjgi"),
 "jump_start": SubResource("Animation_sasy5"),
@@ -372,8 +440,14 @@ blend_mode = 1
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_5dln7"]
 animation = &"air_attack"
 
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_kuf8d"]
+animation = &"dead"
+
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_tg0gq"]
 animation = &"ground_attack"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_tu8ta"]
+animation = &"hit"
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_3usab"]
 animation = &"in_air"
@@ -425,13 +499,28 @@ advance_mode = 2
 switch_mode = 2
 advance_mode = 2
 
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_cpfla"]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_lssnv"]
+switch_mode = 2
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_81rei"]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_bw2je"]
+
 [sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_o1vwy"]
 states/Move/node = SubResource("AnimationNodeBlendSpace1D_0fybw")
-states/Move/position = Vector2(447, 105)
+states/Move/position = Vector2(476, 73)
+states/Start/position = Vector2(-36, 73)
 states/air_attack/node = SubResource("AnimationNodeAnimation_5dln7")
 states/air_attack/position = Vector2(495, -210)
+states/dead/node = SubResource("AnimationNodeAnimation_kuf8d")
+states/dead/position = Vector2(55, 146)
 states/ground_attack/node = SubResource("AnimationNodeAnimation_tg0gq")
 states/ground_attack/position = Vector2(658, 146)
+states/hit/node = SubResource("AnimationNodeAnimation_tu8ta")
+states/hit/position = Vector2(169, 146)
 states/in_air/node = SubResource("AnimationNodeAnimation_3usab")
 states/in_air/position = Vector2(632, -81)
 states/jump_start/node = SubResource("AnimationNodeAnimation_hxrgs")
@@ -440,11 +529,20 @@ states/land/node = SubResource("AnimationNodeAnimation_bpbs5")
 states/land/position = Vector2(487, -25)
 states/rolling/node = SubResource("AnimationNodeAnimation_fno7g")
 states/rolling/position = Vector2(447, 195)
-transitions = ["Start", "Move", SubResource("AnimationNodeStateMachineTransition_lsaj3"), "Move", "jump_start", SubResource("AnimationNodeStateMachineTransition_ipv3w"), "land", "Move", SubResource("AnimationNodeStateMachineTransition_in1st"), "jump_start", "land", SubResource("AnimationNodeStateMachineTransition_mqa4g"), "Move", "rolling", SubResource("AnimationNodeStateMachineTransition_cai1c"), "rolling", "Move", SubResource("AnimationNodeStateMachineTransition_pprhx"), "Move", "ground_attack", SubResource("AnimationNodeStateMachineTransition_fxoew"), "rolling", "ground_attack", SubResource("AnimationNodeStateMachineTransition_v37m0"), "ground_attack", "Move", SubResource("AnimationNodeStateMachineTransition_rxh3w"), "jump_start", "in_air", SubResource("AnimationNodeStateMachineTransition_86vlh"), "Move", "in_air", SubResource("AnimationNodeStateMachineTransition_rxhcu"), "in_air", "land", SubResource("AnimationNodeStateMachineTransition_bw2bn"), "in_air", "air_attack", SubResource("AnimationNodeStateMachineTransition_6dce8"), "jump_start", "air_attack", SubResource("AnimationNodeStateMachineTransition_hxrfl"), "air_attack", "in_air", SubResource("AnimationNodeStateMachineTransition_j1nke")]
-graph_offset = Vector2(213.8, -138.225)
+transitions = ["Start", "Move", SubResource("AnimationNodeStateMachineTransition_lsaj3"), "Move", "jump_start", SubResource("AnimationNodeStateMachineTransition_ipv3w"), "land", "Move", SubResource("AnimationNodeStateMachineTransition_in1st"), "jump_start", "land", SubResource("AnimationNodeStateMachineTransition_mqa4g"), "Move", "rolling", SubResource("AnimationNodeStateMachineTransition_cai1c"), "rolling", "Move", SubResource("AnimationNodeStateMachineTransition_pprhx"), "Move", "ground_attack", SubResource("AnimationNodeStateMachineTransition_fxoew"), "rolling", "ground_attack", SubResource("AnimationNodeStateMachineTransition_v37m0"), "ground_attack", "Move", SubResource("AnimationNodeStateMachineTransition_rxh3w"), "jump_start", "in_air", SubResource("AnimationNodeStateMachineTransition_86vlh"), "Move", "in_air", SubResource("AnimationNodeStateMachineTransition_rxhcu"), "in_air", "land", SubResource("AnimationNodeStateMachineTransition_bw2bn"), "in_air", "air_attack", SubResource("AnimationNodeStateMachineTransition_6dce8"), "jump_start", "air_attack", SubResource("AnimationNodeStateMachineTransition_hxrfl"), "air_attack", "in_air", SubResource("AnimationNodeStateMachineTransition_j1nke"), "Move", "hit", SubResource("AnimationNodeStateMachineTransition_cpfla"), "hit", "Move", SubResource("AnimationNodeStateMachineTransition_lssnv"), "rolling", "hit", SubResource("AnimationNodeStateMachineTransition_81rei"), "hit", "dead", SubResource("AnimationNodeStateMachineTransition_bw2je")]
+graph_offset = Vector2(-157.993, -253.225)
 
 [sub_resource type="LabelSettings" id="LabelSettings_51ok2"]
 font_size = 6
+
+[sub_resource type="LabelSettings" id="LabelSettings_xb6hc"]
+font_size = 8
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_2p0br"]
+size = Vector2(24, 41)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_6pnsq"]
+size = Vector2(37, 24)
 
 [node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("dodge_state")]
 position = Vector2(61, 223)
@@ -505,15 +603,84 @@ can_move = false
 can_change_direction = false
 gravity_enabled = false
 
+[node name="Hit" type="Node" parent="CharacterStateMachine" node_paths=PackedStringArray("damageable", "character_state_machine", "dead_state", "return_state")]
+script = ExtResource("8_875ap")
+damageable = NodePath("../../DamageHandler")
+character_state_machine = NodePath("..")
+dead_state = NodePath("../Dead")
+return_state = NodePath("../Ground")
+can_move = false
+can_take_damage = false
+can_change_direction = false
+
+[node name="Timer" type="Timer" parent="CharacterStateMachine/Hit"]
+wait_time = 0.3
+one_shot = true
+
+[node name="Dead" type="Node" parent="CharacterStateMachine"]
+script = ExtResource("9_deu0a")
+can_move = false
+can_take_damage = false
+can_change_direction = false
+
 [node name="State_debug" type="Label" parent="." node_paths=PackedStringArray("state_machine")]
+visible = false
 offset_left = -24.0
-offset_top = -41.0
+offset_top = -58.0
 offset_right = 21.0
-offset_bottom = -15.0
+offset_bottom = -32.0
 text = "State:"
 label_settings = SubResource("LabelSettings_51ok2")
 script = ExtResource("6_tmknx")
 state_machine = NodePath("../CharacterStateMachine")
 
+[node name="DodgeTimer" type="Timer" parent="."]
+one_shot = true
+
+[node name="DamageHandler" type="Node" parent="." node_paths=PackedStringArray("character")]
+script = ExtResource("9_5tymk")
+character = NodePath("..")
+
+[node name="Health" type="Label" parent="." node_paths=PackedStringArray("character")]
+offset_left = -13.0
+offset_top = -40.0
+offset_right = 27.0
+offset_bottom = -25.0
+text = "Test"
+label_settings = SubResource("LabelSettings_xb6hc")
+script = ExtResource("10_saoy4")
+character = NodePath("..")
+
+[node name="GroundAttackHitbox" type="Area2D" parent="." node_paths=PackedStringArray("player", "facing_shape")]
+collision_mask = 4
+monitoring = false
+script = ExtResource("13_qdsuv")
+player = NodePath("..")
+facing_shape = NodePath("CollisionShape2D")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="GroundAttackHitbox"]
+position = Vector2(41, -6.5)
+shape = SubResource("RectangleShape2D_2p0br")
+script = ExtResource("13_q53mh")
+facing_left_position = Vector2(-34, -6.5)
+facing_right_position = Vector2(41, -6.5)
+
+[node name="AirAttackHitbox" type="Area2D" parent="." node_paths=PackedStringArray("player", "facing_shape")]
+collision_mask = 4
+monitoring = false
+script = ExtResource("15_vte1f")
+player = NodePath("..")
+facing_shape = NodePath("CollisionShape2D")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AirAttackHitbox"]
+position = Vector2(47.5, -21)
+shape = SubResource("RectangleShape2D_6pnsq")
+script = ExtResource("15_8bgq1")
+facing_left_position = Vector2(-42.5, -21)
+facing_right_position = Vector2(47.5, -21)
+
 [connection signal="animation_finished" from="AnimationTree" to="CharacterStateMachine/Dodging" method="_on_animation_tree_animation_finished"]
 [connection signal="animation_finished" from="AnimationTree" to="CharacterStateMachine/Attack" method="_on_animation_tree_animation_finished"]
+[connection signal="timeout" from="CharacterStateMachine/Hit/Timer" to="CharacterStateMachine/Hit" method="_on_timer_timeout"]
+[connection signal="body_entered" from="GroundAttackHitbox" to="GroundAttackHitbox" method="_on_body_entered"]
+[connection signal="body_entered" from="AirAttackHitbox" to="AirAttackHitbox" method="_on_body_entered"]
