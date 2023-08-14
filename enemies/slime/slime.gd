@@ -27,7 +27,7 @@ var attack_dash_jump_speed: float = -200.0
 	get:
 		return current_health
 	set(value):
-		SignalBus.emit_signal("on_health_changed", get_parent(), value - current_health)
+		SignalBus.emit_signal("on_health_changed", self, value - current_health)
 		current_health = value
 # Need to figure out python like props
 var is_alive : bool = true:

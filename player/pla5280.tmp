@@ -1,4 +1,4 @@
-[gd_scene load_steps=68 format=3 uid="uid://7q4lg3buwj6l"]
+[gd_scene load_steps=65 format=3 uid="uid://7q4lg3buwj6l"]
 
 [ext_resource type="Script" path="res://player/player.gd" id="1_s7ewl"]
 [ext_resource type="Texture2D" uid="uid://dsulu5xil8xfe" path="res://art/bladekeeper/spritesheets/metal_bladekeeper_FREE_v1.1_SpriteSheet_288x128.png" id="2_4gm2r"]
@@ -14,8 +14,6 @@
 [ext_resource type="Script" path="res://player/HealthLabel.gd" id="10_saoy4"]
 [ext_resource type="Script" path="res://player/FacingCollisionShape2D.gd" id="13_q53mh"]
 [ext_resource type="Script" path="res://player/GroundAttackHitbox.gd" id="13_qdsuv"]
-[ext_resource type="Script" path="res://player/CollisionShape2D.gd" id="15_8bgq1"]
-[ext_resource type="Script" path="res://player/AirAttackHitbox.gd" id="15_vte1f"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_68q5i"]
 radius = 11.0
@@ -51,18 +49,6 @@ tracks/0/keys = {
 "transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
 "update": 1,
 "values": [100, 101, 102, 103, 104, 105, 106, 107]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("AirAttackHitbox:monitoring")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0.12, 0.36),
-"transitions": PackedFloat32Array(1, 1),
-"update": 1,
-"values": [true, false]
 }
 
 [sub_resource type="Animation" id="Animation_ui32x"]
@@ -541,15 +527,11 @@ font_size = 8
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_2p0br"]
 size = Vector2(24, 41)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_6pnsq"]
-size = Vector2(37, 24)
-
-[node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("dodge_state", "dead_state")]
+[node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("dodge_state")]
 position = Vector2(61, 223)
 collision_layer = 2
 script = ExtResource("1_s7ewl")
 dodge_state = NodePath("CharacterStateMachine/Dodging")
-dead_state = NodePath("CharacterStateMachine/Dead")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(3, -7)
@@ -625,7 +607,6 @@ can_take_damage = false
 can_change_direction = false
 
 [node name="State_debug" type="Label" parent="." node_paths=PackedStringArray("state_machine")]
-visible = false
 offset_left = -24.0
 offset_top = -58.0
 offset_right = 21.0
@@ -666,24 +647,7 @@ script = ExtResource("13_q53mh")
 facing_left_position = Vector2(-34, -6.5)
 facing_right_position = Vector2(41, -6.5)
 
-[node name="AirAttackHitbox" type="Area2D" parent="." node_paths=PackedStringArray("player", "facing_shape")]
-collision_mask = 4
-monitoring = false
-script = ExtResource("15_vte1f")
-player = NodePath("..")
-facing_shape = NodePath("CollisionShape2D")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="AirAttackHitbox"]
-position = Vector2(47.5, -21)
-shape = SubResource("RectangleShape2D_6pnsq")
-script = ExtResource("15_8bgq1")
-facing_left_position = Vector2(-42.5, -21)
-facing_right_position = Vector2(47.5, -21)
-
-[connection signal="animation_finished" from="AnimationPlayer" to="." method="_on_animation_player_animation_finished"]
-[connection signal="animation_finished" from="AnimationTree" to="." method="_on_animation_tree_animation_finished"]
 [connection signal="animation_finished" from="AnimationTree" to="CharacterStateMachine/Dodging" method="_on_animation_tree_animation_finished"]
 [connection signal="animation_finished" from="AnimationTree" to="CharacterStateMachine/Attack" method="_on_animation_tree_animation_finished"]
 [connection signal="timeout" from="CharacterStateMachine/Hit/Timer" to="CharacterStateMachine/Hit" method="_on_timer_timeout"]
 [connection signal="body_entered" from="GroundAttackHitbox" to="GroundAttackHitbox" method="_on_body_entered"]
-[connection signal="body_entered" from="AirAttackHitbox" to="AirAttackHitbox" method="_on_body_entered"]

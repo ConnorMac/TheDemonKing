@@ -1,0 +1,1 @@
+extends FacingColiisionShape2D

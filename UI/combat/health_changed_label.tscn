@@ -1,0 +1,21 @@
+[gd_scene load_steps=3 format=3 uid="uid://1esh0elaxcgn"]
+
+[ext_resource type="Script" path="res://UI/combat/health_changed_label.gd" id="1_ncl8n"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_86e40"]
+font_size = 8
+
+[node name="HealthChangedLabel" type="Label"]
+offset_right = 32.0
+offset_bottom = 15.0
+text = "Testing"
+label_settings = SubResource("LabelSettings_86e40")
+script = ExtResource("1_ncl8n")
+float_speed = Vector2(0, -80)
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 0.5
+one_shot = true
+autostart = true
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

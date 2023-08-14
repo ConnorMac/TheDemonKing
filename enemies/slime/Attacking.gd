@@ -35,10 +35,6 @@ func ground_attack():
 
 func _on_animation_tree_animation_finished(anim_name):
 	if anim_name == attack_windup_anim:
-		print("Doing ground attack")
 		ground_attack()
 	if anim_name == attack_dash_anim:
 		next_state = GroundIdle
-
-func _on_animation_tree_animation_started(anim_name):
-	print("Changed to animation: " + anim_name)

@@ -22,7 +22,7 @@ var facing_direction : float
 	get:
 		return current_health
 	set(value):
-		SignalBus.emit_signal("on_health_changed", get_parent(), value - current_health)
+		SignalBus.emit_signal("on_health_changed", self, value - current_health)
 		current_health = value
 # Need to figure out python like props
 var is_alive : bool = true:
@@ -42,11 +42,13 @@ var times_jumped_in_air = 0
 @onready var animation_tree : AnimationTree = $AnimationTree # Animation control
 @onready var state_machine : CharacterStateMachine = $CharacterStateMachine
 
-# States
+# Relevant states
 @export var dodge_state : State
+@export var dead_state : State
 
 # Signals
 signal facing_direction_change(facing_right : bool)
+signal player_has_died(dead : bool)
 
 func _ready():
 	# Set the animations as active
@@ -85,3 +87,9 @@ func update_facing_direction():
 			facing_direction = -1
 
 		emit_signal("facing_direction_change", !sprite.flip_h)
+
+func _on_animation_tree_animation_finished(anim_name):
+	# Slightly more accurate signal timing for player death emit
+	# Check the death animation finished and that the current state is dead
+	if state_machine.current_state == dead_state && anim_name == "dead":
+		emit_signal("player_has_died", true)

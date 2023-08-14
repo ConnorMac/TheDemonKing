@@ -28,7 +28,5 @@ func attack():
 
 func _on_animation_tree_animation_finished(anim_name):
 	# If the roll animation is finished go back to the ground state
-	print(anim_name)
 	if anim_name == dodging_animation:
-		print('setting ground state next')
 		next_state = ground_state

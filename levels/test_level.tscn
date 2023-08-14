@@ -1,11 +1,13 @@
-[gd_scene load_steps=12 format=3 uid="uid://bitr87rdie1lf"]
+[gd_scene load_steps=14 format=3 uid="uid://bitr87rdie1lf"]
 
 [ext_resource type="Texture2D" uid="uid://86axyl2g8o2s" path="res://art/map/caverns/layers/tiles.png" id="1_bu7bx"]
+[ext_resource type="Script" path="res://levels/test_level.gd" id="1_e3bau"]
 [ext_resource type="PackedScene" uid="uid://7q4lg3buwj6l" path="res://player/player.tscn" id="2_2isc8"]
 [ext_resource type="Texture2D" uid="uid://7hfmdsltevoe" path="res://art/lighting/2d_lights_and_shadows_neutral_point_light.webp" id="3_8udfx"]
 [ext_resource type="PackedScene" uid="uid://dn7etdxcjkybm" path="res://enemies/slime/slime.tscn" id="4_xu3tx"]
 [ext_resource type="Script" path="res://levels/HealthControl.gd" id="5_wm180"]
 [ext_resource type="PackedScene" uid="uid://1esh0elaxcgn" path="res://UI/combat/health_changed_label.tscn" id="6_y3foj"]
+[ext_resource type="Script" path="res://levels/Retry.gd" id="8_mshrk"]
 
 [sub_resource type="OccluderPolygon2D" id="OccluderPolygon2D_xjqhf"]
 polygon = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
@@ -1197,6 +1199,19 @@ physics_layer_0/collision_layer = 1
 sources/0 = SubResource("TileSetAtlasSource_g4ro0")
 
 [node name="TestLevel" type="Node2D"]
+script = ExtResource("1_e3bau")
+slime_base = ExtResource("4_xu3tx")
+
+[node name="HealthControl" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 183.0
+offset_top = 140.0
+offset_right = 223.0
+offset_bottom = 180.0
+script = ExtResource("5_wm180")
+health_changed_label = ExtResource("6_y3foj")
+damage_color = Color(0.670588, 0.168627, 0, 1)
 
 [node name="Caverns" type="TileMap" parent="."]
 tile_set = SubResource("TileSet_m1lnl")
@@ -1253,10 +1268,44 @@ position = Vector2(410, 156)
 [node name="Slime3" parent="." groups=["enemies"] instance=ExtResource("4_xu3tx")]
 position = Vector2(277, 187)
 
-[node name="HealthControl" type="Control" parent="."]
-layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
-script = ExtResource("5_wm180")
-health_changed_label = ExtResource("6_y3foj")
+[node name="YouWon" type="CanvasLayer" parent="."]
+
+[node name="YouWon" type="Button" parent="YouWon"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -25.0
+offset_top = -15.5
+offset_right = 25.0
+offset_bottom = 15.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/outline_size = 0
+theme_override_font_sizes/font_size = 8
+text = "You killed all the enemies! Kill them again?"
+script = ExtResource("8_mshrk")
+
+[node name="RetryMenu" type="CanvasLayer" parent="."]
+
+[node name="Retry" type="Button" parent="RetryMenu"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -25.0
+offset_top = -15.5
+offset_right = 25.0
+offset_bottom = 15.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/outline_size = 0
+theme_override_font_sizes/font_size = 8
+text = "Your died! Retry?"
+script = ExtResource("8_mshrk")
+
+[connection signal="player_has_died" from="Player" to="." method="_on_player_player_has_died"]
+[connection signal="pressed" from="YouWon/YouWon" to="YouWon/YouWon" method="_on_pressed"]
+[connection signal="pressed" from="RetryMenu/Retry" to="RetryMenu/Retry" method="_on_pressed"]
