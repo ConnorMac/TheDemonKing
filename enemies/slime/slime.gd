@@ -8,6 +8,7 @@ const JUMP_VELOCITY = -400.0
 @onready var sprite : Sprite2D = $Sprite2D # Player Sprite sheet
 @onready var animation_tree : AnimationTree = $AnimationTree # Animation control
 @onready var state_machine : CharacterStateMachine = $CharacterStateMachine
+@onready var emote_handler : Node = $EmotesHandler
 # A bit of a hack to get the player in the "player" group
 @onready var player : CharacterBody2D = get_tree().get_nodes_in_group("player")[0]
 
@@ -16,7 +17,7 @@ var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 
 # Local vars
 var facing_direction : float
-var sight_distance : float = 250.0
+var sight_distance : float = 200.0
 var movement_speed: float = 25.0
 var attack_dash_speed: float = 200.0
 var attack_dash_jump_speed: float = -200.0

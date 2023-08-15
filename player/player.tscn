@@ -1,4 +1,4 @@
-[gd_scene load_steps=68 format=3 uid="uid://7q4lg3buwj6l"]
+[gd_scene load_steps=80 format=3 uid="uid://7q4lg3buwj6l"]
 
 [ext_resource type="Script" path="res://player/player.gd" id="1_s7ewl"]
 [ext_resource type="Texture2D" uid="uid://dsulu5xil8xfe" path="res://art/bladekeeper/spritesheets/metal_bladekeeper_FREE_v1.1_SpriteSheet_288x128.png" id="2_4gm2r"]
@@ -11,11 +11,15 @@
 [ext_resource type="Script" path="res://player/Hit.gd" id="8_875ap"]
 [ext_resource type="Script" path="res://player/DamageHandler.gd" id="9_5tymk"]
 [ext_resource type="Script" path="res://player/Dead.gd" id="9_deu0a"]
-[ext_resource type="Script" path="res://player/HealthLabel.gd" id="10_saoy4"]
 [ext_resource type="Script" path="res://player/FacingCollisionShape2D.gd" id="13_q53mh"]
 [ext_resource type="Script" path="res://player/GroundAttackHitbox.gd" id="13_qdsuv"]
 [ext_resource type="Script" path="res://player/CollisionShape2D.gd" id="15_8bgq1"]
 [ext_resource type="Script" path="res://player/AirAttackHitbox.gd" id="15_vte1f"]
+[ext_resource type="Script" path="res://player/HPDisplay.gd" id="17_de88h"]
+[ext_resource type="Texture2D" uid="uid://tjmbpq8ygjmt" path="res://art/bladekeeper/metal_bladekeeper.png" id="17_nvxoa"]
+[ext_resource type="Texture2D" uid="uid://cydonrqbyfxlu" path="res://UI/healthbar/stamina_2d_text.tres" id="19_4sk4v"]
+[ext_resource type="Script" path="res://player/HPBar.gd" id="19_mw36m"]
+[ext_resource type="Script" path="res://player/DodgeActive.gd" id="20_8va58"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_68q5i"]
 radius = 11.0
@@ -535,14 +539,48 @@ graph_offset = Vector2(-157.993, -253.225)
 [sub_resource type="LabelSettings" id="LabelSettings_51ok2"]
 font_size = 6
 
-[sub_resource type="LabelSettings" id="LabelSettings_xb6hc"]
-font_size = 8
-
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_2p0br"]
 size = Vector2(24, 41)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_6pnsq"]
 size = Vector2(37, 24)
+
+[sub_resource type="Gradient" id="Gradient_pu05c"]
+offsets = PackedFloat32Array(0.941368, 0.95114, 1)
+colors = PackedColorArray(0.965777, 0.782739, 0.83497, 1, 0.397201, 0.353941, 0.426008, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_f7hr2"]
+gradient = SubResource("Gradient_pu05c")
+fill = 2
+fill_from = Vector2(0.495726, 0.5)
+
+[sub_resource type="Gradient" id="Gradient_eu4hj"]
+offsets = PackedFloat32Array(0)
+colors = PackedColorArray(0.592157, 0, 0, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_teuws"]
+gradient = SubResource("Gradient_eu4hj")
+
+[sub_resource type="Gradient" id="Gradient_invy8"]
+offsets = PackedFloat32Array(1)
+colors = PackedColorArray(0.247289, 0.87406, 0.233337, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_55nii"]
+gradient = SubResource("Gradient_invy8")
+
+[sub_resource type="LabelSettings" id="LabelSettings_qjpfb"]
+line_spacing = 0.0
+font_size = 5
+
+[sub_resource type="Gradient" id="Gradient_7pki5"]
+offsets = PackedFloat32Array(0.40678, 0.450847)
+colors = PackedColorArray(0, 0, 0, 0, 0, 0, 0, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_phqca"]
+gradient = SubResource("Gradient_7pki5")
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+metadata/_snap_enabled = true
 
 [node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("dodge_state", "dead_state")]
 position = Vector2(61, 223)
@@ -642,16 +680,6 @@ one_shot = true
 script = ExtResource("9_5tymk")
 character = NodePath("..")
 
-[node name="Health" type="Label" parent="." node_paths=PackedStringArray("character")]
-offset_left = -13.0
-offset_top = -40.0
-offset_right = 27.0
-offset_bottom = -25.0
-text = "Test"
-label_settings = SubResource("LabelSettings_xb6hc")
-script = ExtResource("10_saoy4")
-character = NodePath("..")
-
 [node name="GroundAttackHitbox" type="Area2D" parent="." node_paths=PackedStringArray("player", "facing_shape")]
 collision_mask = 4
 monitoring = false
@@ -679,6 +707,53 @@ shape = SubResource("RectangleShape2D_6pnsq")
 script = ExtResource("15_8bgq1")
 facing_left_position = Vector2(-42.5, -21)
 facing_right_position = Vector2(47.5, -21)
+
+[node name="IngameUI" type="CanvasLayer" parent="."]
+
+[node name="BackgroundPortrait" type="Sprite2D" parent="IngameUI"]
+position = Vector2(22.75, 21.5)
+scale = Vector2(0.445313, 0.453125)
+texture = SubResource("GradientTexture2D_f7hr2")
+
+[node name="Portrait" type="Sprite2D" parent="IngameUI"]
+position = Vector2(23, 21)
+scale = Vector2(0.4375, 0.4375)
+texture = ExtResource("17_nvxoa")
+
+[node name="HPBar" type="TextureProgressBar" parent="IngameUI" node_paths=PackedStringArray("character")]
+offset_left = 37.0
+offset_top = 8.0
+offset_right = 124.0
+offset_bottom = 15.0
+nine_patch_stretch = true
+texture_under = SubResource("GradientTexture1D_teuws")
+texture_progress = SubResource("GradientTexture1D_55nii")
+script = ExtResource("19_mw36m")
+character = NodePath("../..")
+
+[node name="HP" type="Label" parent="IngameUI" node_paths=PackedStringArray("character")]
+offset_left = 73.0
+offset_top = 8.0
+offset_right = 83.0
+offset_bottom = 19.0
+text = "HP:"
+label_settings = SubResource("LabelSettings_qjpfb")
+script = ExtResource("17_de88h")
+character = NodePath("../..")
+
+[node name="DodgeActive" type="TextureProgressBar" parent="IngameUI" node_paths=PackedStringArray("timer")]
+offset_left = 36.0
+offset_top = 15.0
+offset_right = 46.0
+offset_bottom = 25.0
+max_value = 1.0
+step = 0.01
+fill_mode = 4
+nine_patch_stretch = true
+texture_under = SubResource("GradientTexture2D_phqca")
+texture_progress = ExtResource("19_4sk4v")
+script = ExtResource("20_8va58")
+timer = NodePath("../../DodgeTimer")
 
 [connection signal="animation_finished" from="AnimationPlayer" to="." method="_on_animation_player_animation_finished"]
 [connection signal="animation_finished" from="AnimationTree" to="." method="_on_animation_tree_animation_finished"]

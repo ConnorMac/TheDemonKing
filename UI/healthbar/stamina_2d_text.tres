@@ -1,0 +1,9 @@
+[gd_resource type="GradientTexture2D" load_steps=2 format=3 uid="uid://cydonrqbyfxlu"]
+
+[ext_resource type="Gradient" uid="uid://dnnn6pinplm07" path="res://UI/healthbar/stamina.tres" id="1_rqq7y"]
+
+[resource]
+gradient = ExtResource("1_rqq7y")
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+metadata/_snap_enabled = true

@@ -1,6 +1,5 @@
-[gd_scene load_steps=2 format=3 uid="uid://dlgtb0ya0nxuy"]
+[gd_scene load_steps=2 format=3 uid="uid://bxwpjqomxxpjb"]
 
-[ext_resource type="Script" path="res://levels/base/base_level.gd" id="1_hodet"]
+[ext_resource type="PackedScene" uid="uid://djpqvub5w8esc" path="res://levels/base/base_level.tscn" id="1_cfgbr"]
 
-[node name="level1" type="Node2D"]
-script = ExtResource("1_hodet")
+[node name="base_level" instance=ExtResource("1_cfgbr")]

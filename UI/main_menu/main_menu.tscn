@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://dwh8pl2pm6idb"]
+[gd_scene load_steps=5 format=3 uid="uid://dwh8pl2pm6idb"]
 
 [ext_resource type="Script" path="res://UI/main_menu/ButtonLevelSwap.gd" id="1_ivld7"]
 [ext_resource type="PackedScene" uid="uid://bitr87rdie1lf" path="res://levels/test_level.tscn" id="2_ox3xh"]
-[ext_resource type="PackedScene" uid="uid://dlgtb0ya0nxuy" path="res://levels/level1/level1.tscn" id="3_nffpb"]
+[ext_resource type="PackedScene" uid="uid://bxwpjqomxxpjb" path="res://levels/level1/level1.tscn" id="3_nffpb"]
+[ext_resource type="PackedScene" uid="uid://dca8khhni7yd2" path="res://levels/level2/level2.tscn" id="4_hssxs"]
 
 [node name="Control" type="Control"]
 layout_mode = 3
@@ -47,5 +48,22 @@ text = "Play Level 1
 script = ExtResource("1_ivld7")
 scene_to_load = ExtResource("3_nffpb")
 
+[node name="Level2" type="Button" parent="CanvasLayer"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -49.0
+offset_top = -15.5
+offset_right = 49.0
+offset_bottom = 15.5
+grow_horizontal = 2
+grow_vertical = 2
+text = "Play Level 2"
+script = ExtResource("1_ivld7")
+scene_to_load = ExtResource("4_hssxs")
+
 [connection signal="pressed" from="CanvasLayer/TestLevel" to="CanvasLayer/TestLevel" method="_on_pressed"]
 [connection signal="pressed" from="CanvasLayer/Level1" to="CanvasLayer/Level1" method="_on_pressed"]
+[connection signal="pressed" from="CanvasLayer/Level2" to="CanvasLayer/Level2" method="_on_pressed"]

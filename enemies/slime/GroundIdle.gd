@@ -14,6 +14,10 @@ func state_ai_action(delta):
 	var direction_to_player : Vector2 = vector_to_player.normalized()
 	var distance_to_player_x : float  = abs(character.position.x - character.player.position.x)
 	if distance_to_player_x <= character.sight_distance:
+		trigger_alert_notification()
 		next_state = ground_moving_state
 	else:
 		character.velocity.x = 0
+		
+func trigger_alert_notification():
+	character.emote_handler.display_emote('Alert')
